@@ -6,7 +6,7 @@ class AudioController {
         this.nextNoteTime = 0;
         this.beatCount = 0;
         this.isPlaying = false;
-        this.tempo = 120; // Dubstep tempo (140 BPM)
+        this.tempo = GAME_CONFIG.TEMPO;
         this.lookahead = 25.0;
         this.scheduleAheadTime = 0.1;
         this.onBeat = null;
