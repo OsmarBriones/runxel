@@ -17,7 +17,8 @@ The `Game` class acts as the central coordinator, bridging input, audio, and gri
 *   **Initialization**: Sets up the canvas, audio context, and instantiates `Grid` and `AudioController`.
 *   **Game State Control**: Manages the start, stop, and game-over transitions.
 *   **Input Handling**: Captures keyboard events for player movement.
-*   **Physics & Collision**: Applies gravity and checks for intersections with hazard pixels.
+*   **Physics & Collision**: Applies gravity (unless climbing) and checks for intersections with hazard pixels.
+*   **Climbing Mechanics**: Allows vertical movement and suspends gravity when the player overlaps a Platform pixel.
 *   **Rendering**: Handles the drawing of the grid and player to the canvas.
 *   **Game Loop**: The main `renderLoop` drives physics and rendering, while `onBeat` handles rhythmic game logic updates.
 
@@ -47,8 +48,9 @@ A custom audio scheduler inspired by reliable web audio scheduling patterns (Loo
     *   Shadows (`shadowBlur`) are used for the "Neon" glow effect.
 
 ## File Structure
-*   `index.html`: Entry point. Loads scripts in dependency order (`js/audio.js`, `js/grid.js`, `js/script.js`).
+*   `index.html`: Entry point. Loads scripts in dependency order (`js/constants.js`, `js/audio.js`, `js/grid.js`, `js/script.js`).
 *   `style.css`: Handles the "crt-screen" aesthetics, fonts, and UI layout.
+*   `js/constants.js`: Centralized configuration for pixel types, colors, and game settings.
 *   `js/audio.js`: Contains `AudioController` class for synthesis and scheduling.
 *   `js/grid.js`: Contains `Grid` class for world state and logic.
 *   `js/script.js`: Contains `Game` class, the main entry point and controller.

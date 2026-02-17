@@ -50,20 +50,43 @@ class Game {
     handleInput(e) {
         if (!this.isPlaying) return;
         let dx = 0;
+        let dy = 0;
         if (e.key === 'ArrowLeft') dx = -1;
         if (e.key === 'ArrowRight') dx = 1;
 
-        if (e.key === 'ArrowUp' && this.isGrounded()) {
-            // Jump could be here
+        if (e.key === 'ArrowUp') {
+            if (this.canClimb() || (this.isGrounded() && this.grid.get(this.player.x, this.player.y) === PIXEL_TYPES.PLATFORM)) {
+                dy = -1;
+            }
+        }
+        if (e.key === 'ArrowDown') {
+            // Allow moving down if already climbing OR if standing on top of a platform (to enter it)
+            if (this.canClimb() || this.isGrounded()) {
+                dy = 1;
+            }
         }
 
         const newX = this.player.x + dx;
+        const newY = this.player.y + dy;
 
         // Check horizontal collision only here
         if (newX >= 0 && newX < this.gridSize) {
             this.player.x = newX;
             this.checkCollision();
         }
+
+        // Check vertical collision/movement
+        if (dy !== 0 && newY >= 0 && newY < this.gridSize) {
+            this.player.y = newY;
+            this.checkCollision();
+        }
+    }
+
+    // Checks if the player is currently overlapping a climbable object (Platform/Green)
+    canClimb() {
+        // We are climbing if our current cell is a PLATFORM
+        const currentCell = this.grid.get(this.player.x, this.player.y);
+        return currentCell === PIXEL_TYPES.PLATFORM;
     }
 
     // ======== PHYSICS & COLLISION ========
@@ -76,6 +99,9 @@ class Game {
 
     // Applies gravity to player.
     applyGravity() {
+        // If climbing, gravity does not apply
+        if (this.canClimb()) return;
+
         if (!this.isGrounded()) {
             this.player.y += 1;
             this.checkCollision();
