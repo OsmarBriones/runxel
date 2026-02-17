@@ -34,6 +34,8 @@ Runxel is a rhythm-based pixel art survival game built with vanilla JavaScript, 
 You can customize the game settings in `js/constants.js`:
 *   **`GRID_SIZE`**: The resolution of the grid (default: 48).
 *   **`SAFE_ZONE_RADIUS`**: The radius of the initial cleared area (default: 5).
+*   **`MAX_AIR_JUMPS`**: Number of mid-air jumps allowed (default: 3).
+*   **`AIR_JUMP_FLOAT_MS`**: Duration of gravity suspension after an air jump (default: 400ms).
 *   **`TEMPO`**: Game speed (BPM).
 *   **`GRAVITY_MS`**: Falling speed.
 
