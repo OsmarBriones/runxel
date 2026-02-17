@@ -1,100 +1,68 @@
-:root {
-    --bg-color: #050505;
-    --grid-bg: #0a0a0a;
-    --white-pixel: #ffffff;
-    --red-pixel: #ff0044;
-    --green-pixel: #00ff66;
-    --ui-color: #00ffff;
-    --font-main: 'Orbitron', sans-serif;
-}
-
 body {
-    margin: 0;
-    padding: 0;
-    background-color: var(--bg-color);
-    color: var(--white-pixel);
-    font-family: var(--font-main);
+    background-color: #050505;
+    color: #00ffff;
+    font-family: 'Orbitron', sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
+    margin: 0;
     overflow: hidden;
-    user-select: none;
+    /* Prevent scrollbars */
 }
 
 #game-container {
     position: relative;
     text-align: center;
-    border: 2px solid var(--ui-color);
-    padding: 20px;
-    box-shadow: 0 0 20px var(--ui-color);
-    background: rgba(0, 0, 0, 0.8);
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 h1 {
-    color: var(--ui-color);
-    margin: 0 0 10px 0;
-    text-shadow: 0 0 10px var(--ui-color);
-    font-size: 2rem;
+    font-size: 3rem;
+    margin: 10px 0;
+    text-shadow: 0 0 10px #00ffff;
+    letter-spacing: 5px;
 }
 
 #stats {
     display: flex;
     justify-content: space-between;
-    width: 480px;
-    margin: 0 auto 10px auto;
+    width: 100%;
+    /* max-width removed to allow full scaling */
+    margin-bottom: 10px;
     font-size: 1.2rem;
-    color: var(--white-pixel);
-}
-
-#beat-indicator {
-    color: var(--green-pixel);
-    font-weight: bold;
 }
 
 canvas {
-    background-color: var(--grid-bg);
+    border: 2px solid #333;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+    /* No fixed width/height here, handled by JS */
     image-rendering: pixelated;
-    border: 1px solid #333;
-    display: block;
-    margin: 0 auto;
-}
-
-#controls {
-    margin-top: 10px;
-    color: #888;
-    font-size: 0.8rem;
+    /* Keep pixel art crisp */
 }
 
 #overlay {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.9);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    z-index: 10;
-    transition: opacity 0.3s;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.85);
+    padding: 40px;
+    border: 2px solid #00ffff;
+    box-shadow: 0 0 30px #00ffff;
     cursor: pointer;
+    z-index: 10;
 }
 
 #overlay.hidden {
-    opacity: 0;
-    pointer-events: none;
+    display: none;
 }
 
-#overlay h2 {
-    color: var(--ui-color);
-    font-size: 2.5rem;
-    margin-bottom: 20px;
-    animation: pulse 1s infinite alternate;
-}
-
-@keyframes pulse {
-    from { text-shadow: 0 0 10px var(--ui-color); }
-    to { text-shadow: 0 0 20px var(--ui-color), 0 0 40px var(--ui-color); }
+#controls {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: #888;
 }

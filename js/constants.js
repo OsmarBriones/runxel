@@ -16,7 +16,7 @@ const PIXEL_CONFIG = {
 const GAME_CONFIG = {
     PLAYER_COLOR: '#ffffff',
     BACKGROUND_COLOR: '#0a0a0a',
-    GRID_SIZE: 24,
+    GRID_SIZE: 48,
     GRAVITY_MS: 100, // Fall speed in ms
     TEMPO: 120, // BPM
     SAFE_ZONE_RADIUS: 5 // Radius of cleared area around starting position

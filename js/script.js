@@ -22,7 +22,29 @@ class Game {
         this.draw(); // Draw initial state
 
         window.addEventListener('keydown', (e) => this.handleInput(e));
+        window.addEventListener('resize', () => this.resize()); // Responsive
         document.getElementById('overlay').addEventListener('click', () => this.start());
+
+        // Initial resize
+        this.resize();
+    }
+
+    // Resizes canvas to fit window
+    resize() {
+        // Available space (minus header/padding approx 150px)
+        const availableHeight = window.innerHeight - 180;
+        const availableWidth = window.innerWidth - 40;
+
+        // Keep it square
+        const size = Math.min(availableWidth, availableHeight);
+        const safeSize = Math.max(size, 300); // 300px min
+
+        this.canvas.width = safeSize;
+        this.canvas.height = safeSize;
+        this.cellSize = this.canvas.width / this.gridSize;
+
+        // Redraw if needed (e.g. while paused)
+        this.draw();
     }
 
     // ======== GAME STATE CONTROL ========
