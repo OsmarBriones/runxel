@@ -21,12 +21,20 @@ class Grid {
             }
             this.cells.push(row);
         }
-        // Ensure player start position is safe
-        this.cells[12][12] = PIXEL_TYPES.EMPTY;
-        this.cells[12][11] = PIXEL_TYPES.EMPTY;
-        this.cells[12][13] = PIXEL_TYPES.EMPTY;
-        this.cells[11][12] = PIXEL_TYPES.EMPTY;
-        this.cells[13][12] = PIXEL_TYPES.EMPTY;
+        // Ensure player start position is safe (Circle shape based on radius)
+        const cx = Math.floor(this.size / 2);
+        const cy = Math.floor(this.size / 2);
+        const radius = GAME_CONFIG.SAFE_ZONE_RADIUS;
+
+        // Clear circle of radius
+        for (let y = 0; y < this.size; y++) {
+            for (let x = 0; x < this.size; x++) {
+                const dist = Math.sqrt((x - cx) ** 2 + (y - cy) ** 2);
+                if (dist <= radius) {
+                    this.cells[y][x] = PIXEL_TYPES.EMPTY;
+                }
+            }
+        }
     }
 
     // ======== UTILITIES ========

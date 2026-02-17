@@ -18,5 +18,6 @@ const GAME_CONFIG = {
     BACKGROUND_COLOR: '#0a0a0a',
     GRID_SIZE: 24,
     GRAVITY_MS: 100, // Fall speed in ms
-    TEMPO: 120 // BPM
+    TEMPO: 120, // BPM
+    SAFE_ZONE_RADIUS: 5 // Radius of cleared area around starting position
 };
