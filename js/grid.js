@@ -141,7 +141,42 @@ class Grid {
             }
         }
 
+        // Check for overpopulation/infinite growth
+        this.processOverpopulation(nextCells);
+
         this.cells = nextCells;
+    }
+
+    // Checks grid for clusters that are too large and removes them
+    processOverpopulation(gridSnapshot) {
+        const visited = new Set();
+        const maxSize = GAME_CONFIG.MAX_CLUSTER_SIZE;
+
+        for (let y = 0; y < this.size; y++) {
+            for (let x = 0; x < this.size; x++) {
+                const type = gridSnapshot[y][x];
+                if (type !== PIXEL_TYPES.EMPTY && !visited.has(`${x},${y}`)) {
+                    // Get cluster
+                    const cluster = this.getCluster(x, y, gridSnapshot);
+
+                    // Mark as visited
+                    for (const cell of cluster) {
+                        visited.add(`${cell.x},${cell.y}`);
+                    }
+
+                    // Check size
+                    if (cluster.length > maxSize) {
+                        const survivalChance = 1 / GAME_CONFIG.CLUSTER_SURVIVAL_RATIO;
+                        // Destroy most, keep some
+                        for (const cell of cluster) {
+                            if (Math.random() > survivalChance) {
+                                gridSnapshot[cell.y][cell.x] = PIXEL_TYPES.EMPTY;
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     // Destroys pixels within a radius of the target coordinates

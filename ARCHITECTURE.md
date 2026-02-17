@@ -28,7 +28,7 @@ The `Game` class acts as the central coordinator, bridging input, audio, and gri
 Encapsulates all logic related to the game world state and procedural generation.
 
 *   **State Management**: Stores the world array (configurable size via `GAME_CONFIG`).
-*   **Cellular Automata**: (`update` method) Evolving rules where Green pixels propagate and Red pixels consume a circular area of Green pixels upon contact.
+*   **Cellular Automata**: (`update` method) Evolving rules where Green pixels propagate and Red pixels consume a circular area of Green pixels. Includes an **Overpopulation** check to partially destroy (shatter) clusters exceeding a maximum size.
 *   **Spawning**: Procedural generation logic used **only** during initialization to populate the grid.
 *   **Utilities**: Helper methods for neighbor lookups, identifying clusters (`getCluster`), and spatial destruction (`destroyArea`).
 
