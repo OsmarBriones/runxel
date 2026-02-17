@@ -16,9 +16,10 @@ const PIXEL_CONFIG = {
 const GAME_CONFIG = {
     PLAYER_COLOR: '#ffffff',
     BACKGROUND_COLOR: '#0a0a0a',
-    GRID_SIZE: 48,
+    GRID_SIZE: 24,
     GRAVITY_MS: 100, // Fall speed in ms
-    TEMPO: 250, // BPM
+    TEMPO: 120, // BPM
+    TEMPO_INCREMENT: 1, // Tempo increment per beat
     SAFE_ZONE_RADIUS: 5, // Radius of cleared area around starting position
     MAX_AIR_JUMPS: 3, // Number of jumps allowed in mid-air
     AIR_JUMP_FLOAT_MS: 400, // Time to suspend gravity after an air jump

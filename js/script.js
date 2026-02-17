@@ -190,6 +190,7 @@ class Game {
     // logic update on specific beats.
     onBeat(beat) {
         document.getElementById('beat-indicator').innerText = beat;
+        document.getElementById('tempo').innerText = Math.round(this.audio.tempo);
         // Update logic every 2 beats
         if (beat % 2 === 0) {
             this.grid.update();

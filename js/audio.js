@@ -25,6 +25,8 @@ class AudioController {
         if (this.ctx.state === 'suspended') this.ctx.resume();
 
         this.isPlaying = true;
+        this.tempo = GAME_CONFIG.TEMPO;
+        this.beatCount = 0;
         this.nextNoteTime = this.ctx.currentTime;
         this.scheduler();
     }
@@ -51,6 +53,7 @@ class AudioController {
         const secondsPerBeat = 60.0 / this.tempo;
         this.nextNoteTime += secondsPerBeat;
         this.beatCount++;
+        this.tempo += GAME_CONFIG.TEMPO_INCREMENT;
     }
 
     // Plays audio for the current beat.
