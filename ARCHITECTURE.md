@@ -29,7 +29,7 @@ Encapsulates all logic related to the game world state and procedural generation
 
 *   **State Management**: Stores the world array (configurable size via `GAME_CONFIG`).
 *   **Cellular Automata**: (`update` method) Evolving rules where Green pixels propagate and Red pixels consume a circular area of Green pixels upon contact.
-*   **Spawning**: Procedural generation logic to insert new pixels. Initializes with a configurable circular safe zone.
+*   **Spawning**: Procedural generation logic used **only** during initialization to populate the grid.
 *   **Utilities**: Helper methods for neighbor lookups, identifying clusters (`getCluster`), and spatial destruction (`destroyArea`).
 
 ### 3. Audio Engine (`js/audio.js` - `AudioController` class)

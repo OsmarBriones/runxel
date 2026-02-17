@@ -98,8 +98,8 @@ class Grid {
         const nextCells = this.cells.map(row => [...row]);
         const processed = new Set();
 
-        // Spawn new pixels dynamically
-        this.spawnPixels(nextCells);
+        // Spawn new pixels dynamically - DISABLED (as per user request)
+        // this.spawnPixels(nextCells);
 
         for (let y = 0; y < this.size; y++) {
             for (let x = 0; x < this.size; x++) {

@@ -82,9 +82,6 @@ The game world is a 24x24 grid that evolves dynamically.
 *   **Red Pixels (Hazards)**:
     *   Lethal to the player.
     *   **Behavior**: They "eat" Green pixels (turning them empty) and can spawn or spread into darkness.
-*   **Spawning**:
-    *   New pixels spawn randomly on the grid to keep the layout changing.
-    *   Spawning probabilities: ~15% Red, ~85% Green (variable based on random ticks).
 
 ### 2.3 Audio System
 *   **Engine**: Custom `AudioController` using the Web Audio API.
