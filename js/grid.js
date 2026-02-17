@@ -114,7 +114,11 @@ class Grid {
 
                     if (greenNeighbors.length === 1) {
                         const target = greenNeighbors[0];
-                        this.destroyConnectedGreens(target.x, target.y, nextCells);
+                        // Identify and destroy the connected cluster
+                        const cluster = this.getCluster(target.x, target.y, nextCells);
+                        cluster.forEach(p => {
+                            nextCells[p.y][p.x] = PIXEL_TYPES.EMPTY;
+                        });
                     } else if (greenNeighbors.length > 1) {
                         const target = greenNeighbors[0];
                         nextCells[target.y][target.x] = PIXEL_TYPES.EMPTY; // Eat
@@ -146,22 +150,40 @@ class Grid {
         this.cells = nextCells;
     }
 
-    // Removes connected green pixels.
-    destroyConnectedGreens(x, y, gridToUpdate) {
-        // Flood fill to turn linked greens to black
+    // Returns a cluster of connected pixels of the same type
+    getCluster(x, y, gridSnapshot) {
+        const cluster = [];
+        const targetType = gridSnapshot[y][x];
+        if (targetType === PIXEL_TYPES.EMPTY) return cluster; // Don't cluster empty space for now
+
         const stack = [{ x, y }];
+        const visited = new Set();
+        visited.add(`${x},${y}`);
+
         while (stack.length > 0) {
             const cur = stack.pop();
-            if (cur.x >= 0 && cur.x < this.size && cur.y >= 0 && cur.y < this.size) {
-                if (gridToUpdate[cur.y][cur.x] === PIXEL_TYPES.PLATFORM) {
-                    gridToUpdate[cur.y][cur.x] = PIXEL_TYPES.EMPTY;
-                    // Add neighbors
-                    stack.push({ x: cur.x, y: cur.y - 1 });
-                    stack.push({ x: cur.x + 1, y: cur.y });
-                    stack.push({ x: cur.x, y: cur.y + 1 });
-                    stack.push({ x: cur.x - 1, y: cur.y });
+
+            // Add to cluster
+            cluster.push(cur);
+
+            // Check neighbors
+            const neighbors = [
+                { x: cur.x, y: cur.y - 1 },
+                { x: cur.x + 1, y: cur.y },
+                { x: cur.x, y: cur.y + 1 },
+                { x: cur.x - 1, y: cur.y }
+            ];
+
+            for (const n of neighbors) {
+                if (n.x >= 0 && n.x < this.size && n.y >= 0 && n.y < this.size) {
+                    const key = `${n.x},${n.y}`;
+                    if (!visited.has(key) && gridSnapshot[n.y][n.x] === targetType) {
+                        visited.add(key);
+                        stack.push(n);
+                    }
                 }
             }
         }
+        return cluster;
     }
 }
