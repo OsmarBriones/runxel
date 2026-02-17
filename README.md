@@ -26,6 +26,16 @@ Runxel is a rhythm-based pixel art survival game built with vanilla JavaScript, 
 | **Hazard** | Neon Red | `#ff0044` | Lethal. Consumes platforms. |
 | **Empty** | Black | `#0a0a0a` | Vacuum. |
 
+| **Empty** | Black | `#0a0a0a` | Vacuum. |
+
+### Configuration
+
+You can customize the game settings in `js/constants.js`:
+*   **`GRID_SIZE`**: The resolution of the grid (default: 48).
+*   **`SAFE_ZONE_RADIUS`**: The radius of the initial cleared area (default: 5).
+*   **`TEMPO`**: Game speed (BPM).
+*   **`GRAVITY_MS`**: Falling speed.
+
 To add new pixel types, update `js/constants.js`.
 
 ## 🛠 Installation & Setup

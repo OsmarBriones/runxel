@@ -19,15 +19,16 @@ The `Game` class acts as the central coordinator, bridging input, audio, and gri
 *   **Input Handling**: Captures keyboard events for player movement.
 *   **Physics & Collision**: Applies gravity (unless climbing) and checks for intersections with hazard pixels.
 *   **Climbing Mechanics**: Allows vertical movement and suspends gravity when the player overlaps a Platform pixel.
-*   **Rendering**: Handles the drawing of the grid and player to the canvas.
+*   **Climbing Mechanics**: Allows vertical movement and suspends gravity when the player overlaps a Platform pixel.
+*   **Rendering**: Handles the drawing of the grid and player to the canvas. Supports dynamic resizing to fit the window while maintaining aspect ratio.
 *   **Game Loop**: The main `renderLoop` drives physics and rendering, while `onBeat` handles rhythmic game logic updates.
 
 ### 2. Grid System (`js/grid.js` - `Grid` class)
 Encapsulates all logic related to the game world state and procedural generation.
 
-*   **State Management**: Stores the 24x24 world array.
+*   **State Management**: Stores the world array (configurable size via `GAME_CONFIG`).
 *   **Cellular Automata**: (`update` method) Evolving rules where Green pixels propagate and Red pixels consume.
-*   **Spawning**: Procedural generation logic to insert new pixels.
+*   **Spawning**: Procedural generation logic to insert new pixels. Initializes with a configurable circular safe zone.
 *   **Utilities**: Helper methods for neighbor lookups and finding connected components.
 
 ### 3. Audio Engine (`js/audio.js` - `AudioController` class)
@@ -42,7 +43,8 @@ A custom audio scheduler inspired by reliable web audio scheduling patterns (Loo
     *   **Filters**: Lowpass filters modulated by LFOs to create the "Wobble" bass effect.
 
 ### 4. Rendering Pipeline
-*   **Canvas API**: efficient clearing and redrawing of the 24x24 grid each frame.
+*   **Canvas API**: efficient clearing and redrawing of the grid each frame.
+*   **Responsiveness**: The `Game.resize()` method dynamically calculates the maximum possible square size that fits the viewport, ensuring the game remains playable on different screen sizes.
 *   **Optimization**: 
     *   Integer coordinates are used to snap pixels to the grid.
     *   Shadows (`shadowBlur`) are used for the "Neon" glow effect.
