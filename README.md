@@ -10,6 +10,7 @@ Runxel is a rhythm-based pixel art survival game built with vanilla JavaScript, 
     *   **Left Arrow**: Move Left
     *   **Right Arrow**: Move Right
     *   **Up/Down Arrow**: Climb (When inside Green Pixels)
+    *   **Up Arrow (Mid-Air)**: Air Jump (Max 3 times, recharges on Green Pixels)
     *   *(Vertical movement is otherwise controlled by gravity)*
 4.  **Objective**: Survive as long as possible!
     *   **White Pixel**: You.

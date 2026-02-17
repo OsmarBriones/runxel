@@ -12,6 +12,8 @@ class Game {
 
         this.grid = new Grid(this.gridSize);
         this.player = { x: 12, y: 12 };
+        this.airJumpsLeft = GAME_CONFIG.MAX_AIR_JUMPS;
+        this.lastAirJumpTime = 0;
         this.isPlaying = false;
 
         // Gravity timing
@@ -79,6 +81,12 @@ class Game {
         if (e.key === 'ArrowUp') {
             if (this.canClimb() || (this.isGrounded() && this.grid.get(this.player.x, this.player.y) === PIXEL_TYPES.PLATFORM)) {
                 dy = -1;
+            } else if (this.airJumpsLeft > 0) {
+                // Air Jump
+                dy = -1;
+                this.airJumpsLeft--;
+                this.lastAirJumpTime = performance.now();
+                console.log("Air Jump! Left:", this.airJumpsLeft);
             }
         }
         if (e.key === 'ArrowDown') {
@@ -102,6 +110,11 @@ class Game {
             this.player.y = newY;
             this.checkCollision();
         }
+
+        // Recharge jumps if touching green
+        if (this.canClimb() || this.isGrounded()) {
+            this.airJumpsLeft = GAME_CONFIG.MAX_AIR_JUMPS;
+        }
     }
 
     // Checks if the player is currently overlapping a climbable object (Platform/Green)
@@ -122,7 +135,10 @@ class Game {
     // Applies gravity to player.
     applyGravity() {
         // If climbing, gravity does not apply
-        if (this.canClimb()) return;
+        if (this.canClimb()) {
+            this.airJumpsLeft = GAME_CONFIG.MAX_AIR_JUMPS; // Also recharge while climbing
+            return;
+        }
 
         if (!this.isGrounded()) {
             this.player.y += 1;
@@ -148,7 +164,12 @@ class Game {
         const deltaTime = time - this.lastGravityTime;
 
         if (deltaTime > this.gravityInterval) {
-            this.applyGravity();
+            // Check if floating after air jump
+            const isFloating = (time - this.lastAirJumpTime) < GAME_CONFIG.AIR_JUMP_FLOAT_MS;
+
+            if (!isFloating) {
+                this.applyGravity();
+            }
             this.lastGravityTime = time;
         }
 

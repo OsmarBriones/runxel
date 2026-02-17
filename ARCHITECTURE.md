@@ -18,6 +18,7 @@ The `Game` class acts as the central coordinator, bridging input, audio, and gri
 *   **Game State Control**: Manages the start, stop, and game-over transitions.
 *   **Input Handling**: Captures keyboard events for player movement.
 *   **Physics & Collision**: Applies gravity (unless climbing) and checks for intersections with hazard pixels.
+*   **Air Jump System**: Allows limited mid-air jumps (configurable via `GAME_CONFIG`), recharging when touching Platform pixels.
 *   **Climbing Mechanics**: Allows vertical movement and suspends gravity when the player overlaps a Platform pixel.
 *   **Climbing Mechanics**: Allows vertical movement and suspends gravity when the player overlaps a Platform pixel.
 *   **Rendering**: Handles the drawing of the grid and player to the canvas. Supports dynamic resizing to fit the window while maintaining aspect ratio.

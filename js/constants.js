@@ -19,5 +19,7 @@ const GAME_CONFIG = {
     GRID_SIZE: 48,
     GRAVITY_MS: 100, // Fall speed in ms
     TEMPO: 120, // BPM
-    SAFE_ZONE_RADIUS: 5 // Radius of cleared area around starting position
+    SAFE_ZONE_RADIUS: 5, // Radius of cleared area around starting position
+    MAX_AIR_JUMPS: 3, // Number of jumps allowed in mid-air
+    AIR_JUMP_FLOAT_MS: 400 // Time to suspend gravity after an air jump
 };
