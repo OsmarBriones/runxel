@@ -11,18 +11,25 @@ Runxel is a lightweight, client-side web application that leverages modern brows
 
 ## System Components
 
-### 1. Game Logic (`Game` class)
-The game logic is organized into distinct functional sections within `script.js`:
+### 1. Game Controller (`js/script.js` - `Game` class)
+The `Game` class acts as the central coordinator, bridging input, audio, and grid mechanics.
 
-*   **Initialization**: Sets up the canvas, audio context, and initial grid state.
+*   **Initialization**: Sets up the canvas, audio context, and instantiates `Grid` and `AudioController`.
 *   **Game State Control**: Manages the start, stop, and game-over transitions.
 *   **Input Handling**: Captures keyboard events for player movement.
 *   **Physics & Collision**: Applies gravity and checks for intersections with hazard pixels.
-*   **Grid Mechanics**: Contains the cellular automata rules where Green pixels propagate and Red pixels consume.
 *   **Rendering**: Handles the drawing of the grid and player to the canvas.
 *   **Game Loop**: The main `renderLoop` drives physics and rendering, while `onBeat` handles rhythmic game logic updates.
 
-### 2. Audio Engine (`AudioController` class)
+### 2. Grid System (`js/grid.js` - `Grid` class)
+Encapsulates all logic related to the game world state and procedural generation.
+
+*   **State Management**: Stores the 24x24 world array.
+*   **Cellular Automata**: (`update` method) Evolving rules where Green pixels propagate and Red pixels consume.
+*   **Spawning**: Procedural generation logic to insert new pixels.
+*   **Utilities**: Helper methods for neighbor lookups and finding connected components.
+
+### 3. Audio Engine (`js/audio.js` - `AudioController` class)
 A custom audio scheduler inspired by reliable web audio scheduling patterns (Looking Ahead).
 
 *   **Initialization**: Sets up the AudioContext.
@@ -33,16 +40,18 @@ A custom audio scheduler inspired by reliable web audio scheduling patterns (Loo
     *   **Gain Nodes**: For envelope shaping (ADSR-like volume control).
     *   **Filters**: Lowpass filters modulated by LFOs to create the "Wobble" bass effect.
 
-### 3. Rendering Pipeline
+### 4. Rendering Pipeline
 *   **Canvas API**: efficient clearing and redrawing of the 24x24 grid each frame.
 *   **Optimization**: 
     *   Integer coordinates are used to snap pixels to the grid.
     *   Shadows (`shadowBlur`) are used for the "Neon" glow effect.
 
 ## File Structure
-*   `index.html`: Entry point. Contains the DOM structure for UI overlays and the Canvas element.
+*   `index.html`: Entry point. Loads scripts in dependency order (`js/audio.js`, `js/grid.js`, `js/script.js`).
 *   `style.css`: Handles the "crt-screen" aesthetics, fonts, and UI layout.
-*   `script.js`: Contains all logic, split into `AudioController` and `Game` classes.
+*   `js/audio.js`: Contains `AudioController` class for synthesis and scheduling.
+*   `js/grid.js`: Contains `Grid` class for world state and logic.
+*   `js/script.js`: Contains `Game` class, the main entry point and controller.
 
 ## Data Flow
 1.  **Input**: User keyboard events -> `Game.handleInput()`
