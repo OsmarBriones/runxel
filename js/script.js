@@ -56,6 +56,16 @@ class Game {
         this.isPlaying = true;
         document.getElementById('overlay').classList.add('hidden');
         this.grid.init(); // Reset grid on start
+
+        // Reset player position to center (safe zone)
+        this.player = {
+            x: Math.floor(this.gridSize / 2),
+            y: Math.floor(this.gridSize / 2)
+        };
+        this.airJumpsLeft = GAME_CONFIG.MAX_AIR_JUMPS;
+        this.lastAirJumpTime = 0;
+        this.lastGravityTime = 0; // Reset gravity timer
+
         this.audio.start();
         this.renderLoop();
     }

@@ -28,9 +28,9 @@ The `Game` class acts as the central coordinator, bridging input, audio, and gri
 Encapsulates all logic related to the game world state and procedural generation.
 
 *   **State Management**: Stores the world array (configurable size via `GAME_CONFIG`).
-*   **Cellular Automata**: (`update` method) Evolving rules where Green pixels propagate and Red pixels consume.
+*   **Cellular Automata**: (`update` method) Evolving rules where Green pixels propagate and Red pixels consume a circular area of Green pixels upon contact.
 *   **Spawning**: Procedural generation logic to insert new pixels. Initializes with a configurable circular safe zone.
-*   **Utilities**: Helper methods for neighbor lookups and identifying clusters of identical pixels (`getCluster`).
+*   **Utilities**: Helper methods for neighbor lookups, identifying clusters (`getCluster`), and spatial destruction (`destroyArea`).
 
 ### 3. Audio Engine (`js/audio.js` - `AudioController` class)
 A custom audio scheduler inspired by reliable web audio scheduling patterns (Looking Ahead).

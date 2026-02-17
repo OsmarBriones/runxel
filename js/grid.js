@@ -112,16 +112,10 @@ class Grid {
                     const blackNeighbors = neighbors.filter(n => n && n.val === PIXEL_TYPES.EMPTY);
                     const greenNeighbors = neighbors.filter(n => n && n.val === PIXEL_TYPES.PLATFORM);
 
-                    if (greenNeighbors.length === 1) {
+                    if (greenNeighbors.length > 0) {
                         const target = greenNeighbors[0];
-                        // Identify and destroy the connected cluster
-                        const cluster = this.getCluster(target.x, target.y, nextCells);
-                        cluster.forEach(p => {
-                            nextCells[p.y][p.x] = PIXEL_TYPES.EMPTY;
-                        });
-                    } else if (greenNeighbors.length > 1) {
-                        const target = greenNeighbors[0];
-                        nextCells[target.y][target.x] = PIXEL_TYPES.EMPTY; // Eat
+                        // Destroy circular area around contact point
+                        this.destroyArea(target.x, target.y, GAME_CONFIG.HAZARD_DESTRUCTION_RADIUS, nextCells);
                     } else if (blackNeighbors.length > 0) {
                         // Pick random neighbor to avoid just going Up (North)
                         const target = blackNeighbors[Math.floor(Math.random() * blackNeighbors.length)];
@@ -148,6 +142,22 @@ class Grid {
         }
 
         this.cells = nextCells;
+    }
+
+    // Destroys pixels within a radius of the target coordinates
+    destroyArea(cx, cy, radius, gridSnapshot) {
+        for (let y = cy - radius; y <= cy + radius; y++) {
+            for (let x = cx - radius; x <= cx + radius; x++) {
+                if (x >= 0 && x < this.size && y >= 0 && y < this.size) {
+                    const dist = Math.sqrt((x - cx) ** 2 + (y - cy) ** 2);
+                    if (dist <= radius) {
+                        if (gridSnapshot[y][x] === PIXEL_TYPES.PLATFORM) {
+                            gridSnapshot[y][x] = PIXEL_TYPES.EMPTY;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     // Returns a cluster of connected pixels of the same type

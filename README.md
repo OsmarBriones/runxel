@@ -36,6 +36,7 @@ You can customize the game settings in `js/constants.js`:
 *   **`SAFE_ZONE_RADIUS`**: The radius of the initial cleared area (default: 5).
 *   **`MAX_AIR_JUMPS`**: Number of mid-air jumps allowed (default: 3).
 *   **`AIR_JUMP_FLOAT_MS`**: Duration of gravity suspension after an air jump (default: 400ms).
+*   **`HAZARD_DESTRUCTION_RADIUS`**: Radius of the area destroyed when a Hazard touches a Platform (default: 3).
 *   **`TEMPO`**: Game speed (BPM).
 *   **`GRAVITY_MS`**: Falling speed.
 
