@@ -1,4 +1,6 @@
 class AudioController {
+    // ======== INITIALIZATION ========
+    // Initializes the AudioController instance.
     constructor() {
         this.ctx = null;
         this.nextNoteTime = 0;
@@ -10,10 +12,13 @@ class AudioController {
         this.onBeat = null;
     }
 
+    // Initializes the audio context.
     init() {
         this.ctx = new (window.AudioContext || window.webkitAudioContext)();
     }
 
+    // ======== PLAYBACK CONTROL ========
+    // Starts the audio engine.
     start() {
         if (this.isPlaying) return;
         if (!this.ctx) this.init();
@@ -24,11 +29,14 @@ class AudioController {
         this.scheduler();
     }
 
+    // Stops the audio engine.
     stop() {
         this.isPlaying = false;
         clearTimeout(this.timerID);
     }
 
+    // ======== SCHEDULING ========
+    // Schedules notes ahead of time.
     scheduler() {
         if (!this.isPlaying) return;
         while (this.nextNoteTime < this.ctx.currentTime + this.scheduleAheadTime) {
@@ -38,12 +46,14 @@ class AudioController {
         this.timerID = setTimeout(() => this.scheduler(), this.lookahead);
     }
 
+    // Advances to the next beat.
     nextNote() {
         const secondsPerBeat = 60.0 / this.tempo;
         this.nextNoteTime += secondsPerBeat;
         this.beatCount++;
     }
 
+    // Plays audio for the current beat.
     scheduleNote(time) {
         // Only trigger game logic every 4 beats (approx 1.7s at 140BPM) 
         // to match the "1 second" requirement roughly while keeping musicality.
@@ -101,6 +111,8 @@ class AudioController {
 }
 
 class Game {
+    // ======== INITIALIZATION ========
+    // Initializes the Game instance.
     constructor() {
         this.canvas = document.getElementById('game-canvas');
         this.ctx = this.canvas.getContext('2d');
@@ -126,6 +138,7 @@ class Game {
         this.draw();
     }
 
+    // Generates the initial grid with random pixels.
     initGrid() {
         this.grid = [];
         for (let y = 0; y < this.gridSize; y++) {
@@ -148,6 +161,8 @@ class Game {
         this.grid[13][12] = 0;
     }
 
+    // ======== GAME STATE CONTROL ========
+    // Starts the game loop.
     start() {
         if (this.isPlaying) return;
         this.isPlaying = true;
@@ -157,6 +172,17 @@ class Game {
         this.renderLoop();
     }
 
+    // Ends the game.
+    gameOver() {
+        this.isPlaying = false;
+        this.audio.stop();
+        document.getElementById('overlay').classList.remove('hidden');
+        document.querySelector('#overlay h2').innerText = "GAME OVER";
+        document.querySelector('#score').innerText = "0";
+    }
+
+    // ======== INPUT HANDLING ========
+    // Handles player input.
     handleInput(e) {
         if (!this.isPlaying) return;
         let dx = 0; // Removed dy, vertical movement is controlled by gravity
@@ -186,12 +212,15 @@ class Game {
         }
     }
 
+    // ======== PHYSICS & COLLISION ========
+    // Checks if player is on ground.
     isGrounded() {
         if (this.player.y + 1 >= this.gridSize) return true; // Bottom
         const cellBelow = this.grid[this.player.y + 1][this.player.x];
         return cellBelow === 2; // Green is platform
     }
 
+    // Applies gravity to player.
     applyGravity() {
         if (!this.isGrounded()) {
             this.player.y += 1;
@@ -199,6 +228,7 @@ class Game {
         }
     }
 
+    // Checks for collisions with hazards.
     checkCollision() {
         const cell = this.grid[this.player.y][this.player.x];
         if (cell === 1) {
@@ -206,14 +236,10 @@ class Game {
         }
     }
 
-    gameOver() {
-        this.isPlaying = false;
-        this.audio.stop();
-        document.getElementById('overlay').classList.remove('hidden');
-        document.querySelector('#overlay h2').innerText = "GAME OVER";
-        document.querySelector('#score').innerText = "0";
-    }
 
+
+    // ======== GAME LOOP ========
+    // Main render and physics loop.
     renderLoop(time) {
         if (!this.isPlaying) return;
 
@@ -230,6 +256,7 @@ class Game {
         requestAnimationFrame((t) => this.renderLoop(t));
     }
 
+    // logic update on specific beats.
     onBeat(beat) {
         document.getElementById('beat-indicator').innerText = beat;
         // Update logic every 2 beats (approx 0.85s at 140 BPM) to keep game pace relatively fast but readable
@@ -246,6 +273,8 @@ class Game {
         setTimeout(() => this.ctx.canvas.style.transform = "scale(1)", 100);
     }
 
+    // ======== UTILITIES ========
+    // Gets adjacent cells.
     getNeighbors(x, y, grid) {
         // Order: Clockwise (N, E, S, W) -> Top, Right, Bottom, Left
         const neighbors = [];
@@ -266,11 +295,10 @@ class Game {
         return neighbors;
     }
 
-    rotateClockwise(neighbors) {
-        // shift array to change priority? No, getNeighbors is already N, E, S, W.
-        return neighbors;
-    }
 
+
+    // ======== GRID MECHANICS ========
+    // Spawns new pixels randomly.
     spawnPixels(grid) {
         // Dynamic generation "por la cuadricula"
         // Try to spawn a few times
@@ -295,6 +323,7 @@ class Game {
         }
     }
 
+    // Updates grid cellular automata.
     updateLogic() {
         const nextGrid = this.grid.map(row => [...row]);
         const processed = new Set();
@@ -359,6 +388,7 @@ class Game {
         this.checkCollision();
     }
 
+    // Removes connected green pixels.
     destroyConnectedGreens(x, y, gridToUpdate) {
         // Flood fill to turn linked greens to black
         const stack = [{ x, y }];
@@ -377,6 +407,8 @@ class Game {
         }
     }
 
+    // ======== RENDERING ========
+    // Renders the game frame.
     draw() {
         // Clear
         this.ctx.fillStyle = '#0a0a0a';
