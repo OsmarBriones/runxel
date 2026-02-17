@@ -15,18 +15,18 @@ class Grid {
                 // Dynamic generation:
                 // Mostly empty (0), some Green (2), fewer Red (1)
                 const rand = Math.random();
-                if (rand > 0.95) row.push(1); // 5% Red
-                else if (rand > 0.8) row.push(2); // 15% Green
-                else row.push(0); // 80% Black
+                if (rand > 0.95) row.push(PIXEL_TYPES.HAZARD); // 5% Red
+                else if (rand > 0.8) row.push(PIXEL_TYPES.PLATFORM); // 15% Green
+                else row.push(PIXEL_TYPES.EMPTY); // 80% Black
             }
             this.cells.push(row);
         }
         // Ensure player start position is safe
-        this.cells[12][12] = 0;
-        this.cells[12][11] = 0;
-        this.cells[12][13] = 0;
-        this.cells[11][12] = 0;
-        this.cells[13][12] = 0;
+        this.cells[12][12] = PIXEL_TYPES.EMPTY;
+        this.cells[12][11] = PIXEL_TYPES.EMPTY;
+        this.cells[12][13] = PIXEL_TYPES.EMPTY;
+        this.cells[11][12] = PIXEL_TYPES.EMPTY;
+        this.cells[13][12] = PIXEL_TYPES.EMPTY;
     }
 
     // ======== UTILITIES ========
@@ -69,16 +69,16 @@ class Grid {
             const ry = Math.floor(Math.random() * this.size);
 
             // Only spawn in empty
-            if (cells[ry][rx] === 0) {
+            if (cells[ry][rx] === PIXEL_TYPES.EMPTY) {
                 // Determine type based on rarity
                 // Red < Green.
                 // 5% chance to spawn SOMETHING this attempt?
                 if (Math.random() < 0.2) { // 20% of 3 attempts = ~50% chance of spawn per tick
                     // Type:
                     if (Math.random() < 0.15) { // 15% Red
-                        cells[ry][rx] = 1;
+                        cells[ry][rx] = PIXEL_TYPES.HAZARD;
                     } else {
-                        cells[ry][rx] = 2; // 85% Green
+                        cells[ry][rx] = PIXEL_TYPES.PLATFORM; // 85% Green
                     }
                 }
             }
@@ -97,38 +97,38 @@ class Grid {
             for (let x = 0; x < this.size; x++) {
                 const cell = this.cells[y][x];
 
-                if (cell === 1 && !processed.has(`${x},${y}`)) { // RED
+                if (cell === PIXEL_TYPES.HAZARD && !processed.has(`${x},${y}`)) { // RED
                     // If this cell was overwritten by a spawn in nextCells, we still process the OLD red...
                     // But we should respect the spawn? No, old logic prevails. 
                     const neighbors = this.getNeighbors(x, y, this.cells);
-                    const blackNeighbors = neighbors.filter(n => n && n.val === 0);
-                    const greenNeighbors = neighbors.filter(n => n && n.val === 2);
+                    const blackNeighbors = neighbors.filter(n => n && n.val === PIXEL_TYPES.EMPTY);
+                    const greenNeighbors = neighbors.filter(n => n && n.val === PIXEL_TYPES.PLATFORM);
 
                     if (greenNeighbors.length === 1) {
                         const target = greenNeighbors[0];
                         this.destroyConnectedGreens(target.x, target.y, nextCells);
                     } else if (greenNeighbors.length > 1) {
                         const target = greenNeighbors[0];
-                        nextCells[target.y][target.x] = 0; // Eat
+                        nextCells[target.y][target.x] = PIXEL_TYPES.EMPTY; // Eat
                     } else if (blackNeighbors.length > 0) {
                         // Pick random neighbor to avoid just going Up (North)
                         const target = blackNeighbors[Math.floor(Math.random() * blackNeighbors.length)];
                         // Check if target is still valid in nextCells (might be spawned on)
-                        if (nextCells[target.y][target.x] === 0) {
-                            nextCells[target.y][target.x] = 1;
+                        if (nextCells[target.y][target.x] === PIXEL_TYPES.EMPTY) {
+                            nextCells[target.y][target.x] = PIXEL_TYPES.HAZARD;
                             processed.add(`${target.x},${target.y}`);
                         }
                     } else {
                         // Stuck? Keep it.
                     }
-                } else if (cell === 2) { // GREEN
+                } else if (cell === PIXEL_TYPES.PLATFORM) { // GREEN
                     const neighbors = this.getNeighbors(x, y, this.cells);
-                    const blackNeighbors = neighbors.filter(n => n && n.val === 0);
+                    const blackNeighbors = neighbors.filter(n => n && n.val === PIXEL_TYPES.EMPTY);
 
                     if (blackNeighbors.length > 0) {
                         const target = blackNeighbors[0];
-                        if (nextCells[target.y][target.x] === 0) {
-                            nextCells[target.y][target.x] = 2; // Grow/Propagate
+                        if (nextCells[target.y][target.x] === PIXEL_TYPES.EMPTY) {
+                            nextCells[target.y][target.x] = PIXEL_TYPES.PLATFORM; // Grow/Propagate
                         }
                     }
                 }
@@ -145,8 +145,8 @@ class Grid {
         while (stack.length > 0) {
             const cur = stack.pop();
             if (cur.x >= 0 && cur.x < this.size && cur.y >= 0 && cur.y < this.size) {
-                if (gridToUpdate[cur.y][cur.x] === 2) {
-                    gridToUpdate[cur.y][cur.x] = 0;
+                if (gridToUpdate[cur.y][cur.x] === PIXEL_TYPES.PLATFORM) {
+                    gridToUpdate[cur.y][cur.x] = PIXEL_TYPES.EMPTY;
                     // Add neighbors
                     stack.push({ x: cur.x, y: cur.y - 1 });
                     stack.push({ x: cur.x + 1, y: cur.y });

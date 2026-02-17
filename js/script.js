@@ -4,7 +4,7 @@ class Game {
     constructor() {
         this.canvas = document.getElementById('game-canvas');
         this.ctx = this.canvas.getContext('2d');
-        this.gridSize = 24;
+        this.gridSize = GAME_CONFIG.GRID_SIZE;
         this.cellSize = this.canvas.width / this.gridSize;
 
         this.audio = new AudioController();
@@ -16,7 +16,7 @@ class Game {
 
         // Gravity timing
         this.lastGravityTime = 0;
-        this.gravityInterval = 100; // 100ms fall speed (~10 blocks/sec)
+        this.gravityInterval = GAME_CONFIG.GRAVITY_MS; // 100ms fall speed (~10 blocks/sec)
 
         // Initial draw
         this.draw(); // Draw initial state
@@ -71,7 +71,7 @@ class Game {
     isGrounded() {
         if (this.player.y + 1 >= this.gridSize) return true; // Bottom
         const cellBelow = this.grid.get(this.player.x, this.player.y + 1);
-        return cellBelow === 2; // Green is platform
+        return cellBelow === PIXEL_TYPES.PLATFORM; // Green is platform
     }
 
     // Applies gravity to player.
@@ -85,7 +85,7 @@ class Game {
     // Checks for collisions with hazards.
     checkCollision() {
         const cell = this.grid.get(this.player.x, this.player.y);
-        if (cell === 1) { // RED
+        if (cell === PIXEL_TYPES.HAZARD) { // RED
             this.gameOver();
         }
     }
@@ -126,15 +126,16 @@ class Game {
     // Renders the game frame.
     draw() {
         // Clear
-        this.ctx.fillStyle = '#0a0a0a';
+        this.ctx.fillStyle = GAME_CONFIG.BACKGROUND_COLOR;
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
         // Draw Grid
         for (let y = 0; y < this.gridSize; y++) {
             for (let x = 0; x < this.gridSize; x++) {
                 const cell = this.grid.get(x, y);
-                if (cell !== 0) {
-                    this.ctx.fillStyle = cell === 1 ? '#ff0044' : '#00ff66';
+                if (cell !== PIXEL_TYPES.EMPTY) {
+                    const pixelConfig = PIXEL_CONFIG[cell];
+                    this.ctx.fillStyle = pixelConfig ? pixelConfig.color : '#ff00ff'; // Fallback to magenta
                     // Glow effect
                     this.ctx.shadowBlur = 10;
                     this.ctx.shadowColor = this.ctx.fillStyle;
@@ -145,9 +146,9 @@ class Game {
         }
 
         // Draw Player
-        this.ctx.fillStyle = '#ffffff';
+        this.ctx.fillStyle = GAME_CONFIG.PLAYER_COLOR;
         this.ctx.shadowBlur = 15;
-        this.ctx.shadowColor = '#ffffff';
+        this.ctx.shadowColor = GAME_CONFIG.PLAYER_COLOR;
         this.ctx.fillRect(
             this.player.x * this.cellSize,
             this.player.y * this.cellSize,

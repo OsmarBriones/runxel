@@ -16,6 +16,17 @@ Runxel is a rhythm-based pixel art survival game built with vanilla JavaScript, 
     *   **Red Pixels**: Danger! Touching these results in **Game Over**.
     *   **Black/Empty**: Air. You will fall through these.
 
+### Pixel Types & Colors
+
+| Pixel Type | Color | Hex Code | Behavior |
+| :--- | :--- | :--- | :--- |
+| **Player** | White | `#ffffff` | Controlled by you. Falls via gravity. |
+| **Platform** | Neon Green | `#00ff66` | Safe ground. Grows into empty space. |
+| **Hazard** | Neon Red | `#ff0044` | Lethal. Consumes platforms. |
+| **Empty** | Black | `#0a0a0a` | Vacuum. |
+
+To add new pixel types, update `js/constants.js`.
+
 ## 🛠 Installation & Setup
 
 No installation is required. This is a client-side web application.
