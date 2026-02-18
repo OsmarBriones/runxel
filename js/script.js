@@ -32,6 +32,10 @@ class Game {
 
         // Initial resize
         this.resize();
+
+        // Update overlay text with config
+        const winText = document.getElementById('win-condition-text');
+        if (winText) winText.innerText = GAME_CONFIG.WIN_BEAT_CONDITION;
     }
 
     // Resizes canvas to fit window
@@ -63,8 +67,7 @@ class Game {
         this.isPlaying = true;
         this.hasWon = false;
         document.getElementById('overlay').classList.add('hidden');
-
-        // Reset Logic
+        document.getElementById('progress-container').classList.add('hidden'); // Hide bar on restart
         this.grid.init(); // Reset grid on start
         this.audio.stop(); // Reset audio/beats
         this.audio.start();
@@ -109,6 +112,23 @@ class Game {
         const reasonElement = document.querySelector('#overlay p:first-of-type');
         if (reasonElement) {
             reasonElement.innerText = reason || "Avoid RED pixels.";
+        }
+
+        // Show beat count in second paragraph (instead of "Move on the BEAT")
+        const beatElement = document.querySelector('#overlay p:nth-of-type(2)');
+        if (beatElement) {
+            const current = this.currentBeat || 0;
+            const target = GAME_CONFIG.WIN_BEAT_CONDITION;
+            beatElement.innerText = `Beat ${current} of ${target}`;
+
+            // Update Progress Bar
+            const percentage = Math.min((current / target) * 100, 100);
+            const progressBar = document.getElementById('progress-container');
+            const progressFill = document.getElementById('progress-fill');
+            if (progressBar && progressFill) {
+                progressBar.classList.remove('hidden');
+                progressFill.style.width = `${percentage}%`;
+            }
         }
 
         document.querySelector('#score').innerText = "0";
@@ -259,7 +279,7 @@ class Game {
     // logic update on specific beats.
     onBeat(beat) {
         this.currentBeat = beat;
-        document.getElementById('beat-indicator').innerText = beat;
+        document.getElementById('beat-indicator').innerText = `${beat} / ${GAME_CONFIG.WIN_BEAT_CONDITION}`;
         document.getElementById('tempo').innerText = Math.round(this.audio.tempo);
 
         // Check Winning Condition
