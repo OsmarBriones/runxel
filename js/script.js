@@ -240,6 +240,7 @@ class Game {
 
     // logic update on specific beats.
     onBeat(beat) {
+        this.currentBeat = beat;
         document.getElementById('beat-indicator').innerText = beat;
         document.getElementById('tempo').innerText = Math.round(this.audio.tempo);
 
@@ -336,6 +337,19 @@ class Game {
             this.cellSize - 1
         );
         this.ctx.shadowBlur = 0;
+
+        // Draw Beat Count on Player
+        if (this.currentBeat !== undefined) {
+            this.ctx.fillStyle = '#000000'; // Black text
+            this.ctx.font = `bold ${Math.floor(this.cellSize / 2)}px Arial`;
+            this.ctx.textAlign = 'center';
+            this.ctx.textBaseline = 'middle';
+            this.ctx.fillText(
+                this.currentBeat,
+                this.player.x * this.cellSize + this.cellSize / 2,
+                this.player.y * this.cellSize + this.cellSize / 2
+            );
+        }
     }
 }
 
