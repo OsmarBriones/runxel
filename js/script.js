@@ -83,8 +83,13 @@ class Game {
         this.renderLoop();
     }
 
-    // Ends the game.
+    // Ends the game. Returns true if game ended, false if prevented (invincible).
     gameOver(reason) {
+        if (GAME_CONFIG.INVINCIBLE_MODE) {
+            console.log(`Invincible Mode: Prevented Game Over (${reason})`);
+            return false;
+        }
+
         this.isPlaying = false;
         this.audio.stop();
         document.getElementById('overlay').classList.remove('hidden');
@@ -97,6 +102,7 @@ class Game {
         }
 
         document.querySelector('#score').innerText = "0";
+        return true;
     }
 
     // ======== INPUT HANDLING ========
@@ -247,21 +253,18 @@ class Game {
             this.campingBeatCount++;
             if (this.campingBeatCount >= GAME_CONFIG.MAX_CAMPING_BEATS) {
                 console.log("Game Over: Camping");
-                this.gameOver("You stood still for too long!");
-                return;
+                if (this.gameOver("You stood still for too long!")) return;
             }
         }
 
         if (this.lineCampingRowBeatCount >= GAME_CONFIG.MAX_ROW_CAMPING_BEATS) {
             console.log("Game Over: Row Camping");
-            this.gameOver("You stayed in the same ROW for too long!");
-            return;
+            if (this.gameOver("You stayed in the same ROW for too long!")) return;
         }
 
         if (this.lineCampingColBeatCount >= GAME_CONFIG.MAX_COL_CAMPING_BEATS) {
             console.log("Game Over: Col Camping");
-            this.gameOver("You stayed in the same COLUMN for too long!");
-            return;
+            if (this.gameOver("You stayed in the same COLUMN for too long!")) return;
         }
 
         // Update logic every N beats
