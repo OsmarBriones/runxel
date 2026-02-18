@@ -66,16 +66,36 @@ class Game {
         this.lastAirJumpTime = 0;
         this.lastGravityTime = 0; // Reset gravity timer
 
+        // Camping logic
+        this.campingBeatCount = 0;
+        this.lastPlayerPos = { x: -1, y: -1 };
+
+        // Line Camping (Row/Col)
+        this.lineCampingRowBeatCount = 0;
+        this.lineCampingColBeatCount = 0;
+
+        // Latch flags for intra-beat movement
+        this.hasLeftRow = false;
+        this.hasLeftCol = false;
+        this.snapshotPos = { x: 0, y: 0 }; // Position at start of beat interval
+
         this.audio.start();
         this.renderLoop();
     }
 
     // Ends the game.
-    gameOver() {
+    gameOver(reason) {
         this.isPlaying = false;
         this.audio.stop();
         document.getElementById('overlay').classList.remove('hidden');
         document.querySelector('#overlay h2').innerText = "GAME OVER";
+
+        // Show specific reason
+        const reasonElement = document.querySelector('#overlay p:first-of-type');
+        if (reasonElement) {
+            reasonElement.innerText = reason || "Avoid RED pixels.";
+        }
+
         document.querySelector('#score').innerText = "0";
     }
 
@@ -114,6 +134,8 @@ class Game {
             // Check for Wall
             if (this.grid.get(newX, this.player.y) !== PIXEL_TYPES.WALL) {
                 this.player.x = newX;
+                // Update Latch
+                if (this.player.x !== this.snapshotPos.x) this.hasLeftCol = true;
                 this.checkCollision();
             }
         }
@@ -123,6 +145,8 @@ class Game {
             // Check for Wall
             if (this.grid.get(this.player.x, newY) !== PIXEL_TYPES.WALL) {
                 this.player.y = newY;
+                // Update Latch
+                if (this.player.y !== this.snapshotPos.y) this.hasLeftRow = true;
                 this.checkCollision();
             }
         }
@@ -157,6 +181,8 @@ class Game {
 
         if (!this.isGrounded()) {
             this.player.y += 1;
+            // Update Latch
+            if (this.player.y !== this.snapshotPos.y) this.hasLeftRow = true;
             this.checkCollision();
         }
     }
@@ -165,7 +191,7 @@ class Game {
     checkCollision() {
         const cell = this.grid.get(this.player.x, this.player.y);
         if (cell === PIXEL_TYPES.HAZARD) { // RED
-            this.gameOver();
+            this.gameOver("You touched a RED pixel!");
         }
     }
 
@@ -196,6 +222,48 @@ class Game {
     onBeat(beat) {
         document.getElementById('beat-indicator').innerText = beat;
         document.getElementById('tempo').innerText = Math.round(this.audio.tempo);
+
+        // Line Camping Check (Row/Col)
+        // Check Row (If Y is same as LAST Y, increment. If Y changed, reset).
+        if (this.player.y === this.lastPlayerPos.y) {
+            this.lineCampingRowBeatCount++;
+        } else {
+            this.lineCampingRowBeatCount = 0;
+        }
+
+        // Check Col (If X is same as LAST X, increment. If X changed, reset).
+        if (this.player.x === this.lastPlayerPos.x) {
+            this.lineCampingColBeatCount++;
+        } else {
+            this.lineCampingColBeatCount = 0;
+        }
+
+        // Update lastPlayerPos AFTER checking camping
+        if (this.player.x !== this.lastPlayerPos.x || this.player.y !== this.lastPlayerPos.y) {
+            this.campingBeatCount = 0;
+            this.lastPlayerPos = { x: this.player.x, y: this.player.y };
+        } else {
+            // Static Camping Check
+            this.campingBeatCount++;
+            if (this.campingBeatCount >= GAME_CONFIG.MAX_CAMPING_BEATS) {
+                console.log("Game Over: Camping");
+                this.gameOver("You stood still for too long!");
+                return;
+            }
+        }
+
+        if (this.lineCampingRowBeatCount >= GAME_CONFIG.MAX_ROW_CAMPING_BEATS) {
+            console.log("Game Over: Row Camping");
+            this.gameOver("You stayed in the same ROW for too long!");
+            return;
+        }
+
+        if (this.lineCampingColBeatCount >= GAME_CONFIG.MAX_COL_CAMPING_BEATS) {
+            console.log("Game Over: Col Camping");
+            this.gameOver("You stayed in the same COLUMN for too long!");
+            return;
+        }
+
         // Update logic every N beats
         if (beat % GAME_CONFIG.GRID_UPDATE_INTERVAL === 0) {
             this.grid.update(this.player);

@@ -21,6 +21,9 @@ The `Game` class acts as the central coordinator, bridging input, audio, and gri
 *   **Air Jump System**: Allows limited mid-air jumps (configurable limits), recharging when touching Platform pixels. Includes a temporary gravity suspension ("float") after jumping to assist with maneuvering.
 *   **Climbing Mechanics**: Allows vertical movement and suspends gravity when the player overlaps a Platform pixel.
 *   **Climbing Mechanics**: Allows vertical movement and suspends gravity when the player overlaps a Platform pixel.
+*   **Anti-Camping**: 
+    *   **Static**: Game Over if player remains in the same cell for `MAX_CAMPING_BEATS`.
+    *   **Linear**: Game Over if player remains in the same Row for `MAX_ROW_CAMPING_BEATS` or Column for `MAX_COL_CAMPING_BEATS`.
 *   **Rendering**: Handles the drawing of the grid and player to the canvas. Supports dynamic resizing to fit the window while maintaining aspect ratio.
 *   **Game Loop**: The main `renderLoop` drives physics and rendering, while `onBeat` handles rhythmic game logic updates.
 
