@@ -2,14 +2,16 @@
 const PIXEL_TYPES = {
     EMPTY: 0,
     HAZARD: 1,
-    PLATFORM: 2
+    PLATFORM: 2,
+    WALL: 3
 };
 
 // Pixel Configuration (Colors, Names)
 const PIXEL_CONFIG = {
     [PIXEL_TYPES.EMPTY]: { color: '#0a0a0a', name: 'Empty' },
     [PIXEL_TYPES.HAZARD]: { color: '#ff0044', name: 'Hazard' }, // Red
-    [PIXEL_TYPES.PLATFORM]: { color: '#00ff66', name: 'Platform' } // Green
+    [PIXEL_TYPES.PLATFORM]: { color: '#00ff66', name: 'Platform' }, // Green
+    [PIXEL_TYPES.WALL]: { color: '#8B4513', name: 'Wall' } // Brown
 };
 
 // General Game Configuration

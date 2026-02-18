@@ -111,14 +111,20 @@ class Game {
 
         // Check horizontal collision only here
         if (newX >= 0 && newX < this.gridSize) {
-            this.player.x = newX;
-            this.checkCollision();
+            // Check for Wall
+            if (this.grid.get(newX, this.player.y) !== PIXEL_TYPES.WALL) {
+                this.player.x = newX;
+                this.checkCollision();
+            }
         }
 
         // Check vertical collision/movement
         if (dy !== 0 && newY >= 0 && newY < this.gridSize) {
-            this.player.y = newY;
-            this.checkCollision();
+            // Check for Wall
+            if (this.grid.get(this.player.x, newY) !== PIXEL_TYPES.WALL) {
+                this.player.y = newY;
+                this.checkCollision();
+            }
         }
 
         // Recharge jumps if touching green
@@ -135,11 +141,10 @@ class Game {
     }
 
     // ======== PHYSICS & COLLISION ========
-    // Checks if player is on ground.
     isGrounded() {
         if (this.player.y + 1 >= this.gridSize) return true; // Bottom
         const cellBelow = this.grid.get(this.player.x, this.player.y + 1);
-        return cellBelow === PIXEL_TYPES.PLATFORM; // Green is platform
+        return cellBelow === PIXEL_TYPES.PLATFORM || cellBelow === PIXEL_TYPES.WALL; // Green or Brown
     }
 
     // Applies gravity to player.
@@ -193,7 +198,7 @@ class Game {
         document.getElementById('tempo').innerText = Math.round(this.audio.tempo);
         // Update logic every 2 beats
         if (beat % 2 === 0) {
-            this.grid.update();
+            this.grid.update(this.player);
             this.checkCollision(); // Check again in case a red pixel spawned on us
         }
 

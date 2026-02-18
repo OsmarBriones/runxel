@@ -24,6 +24,7 @@ Runxel is a rhythm-based pixel art survival game built with vanilla JavaScript, 
 | :--- | :--- | :--- | :--- |
 | **Player** | White | `#ffffff` | Controlled by you. Falls via gravity. |
 | **Platform** | Neon Green | `#00ff66` | Safe ground. Grows into empty space. |
+| **Wall** | Brown | `#8B4513` | Solid structure. Forms from dense Green clusters. Falls and crushes other pixels. |
 | **Hazard** | Neon Red | `#ff0044` | Lethal. Consumes platforms. |
 | **Empty** | Black | `#0a0a0a` | Vacuum. |
 
@@ -84,6 +85,10 @@ The game world is a 24x24 grid that evolves dynamically.
 *   **Red Pixels (Hazards)**:
     *   Lethal to the player.
     *   **Behavior**: They "eat" Green pixels (turning them empty) and can spawn or spread into darkness.
+*   **Brown Pixels (Walls)**:
+    *   Solid barriers the player cannot pass through but can stand on.
+    *   **Formation**: Logic transforms a Green pixel into a Wall if it is thoroughly surrounded by 8 other Green pixels (and no player is present).
+    *   **Gravity**: Walls fall downwards, crushing (destroying) any Green or Red pixels beneath them, until they land on the floor, the player, or another Wall.
 
 ### 2.3 Audio System
 *   **Engine**: Custom `AudioController` using the Web Audio API.
