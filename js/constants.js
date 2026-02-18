@@ -27,5 +27,6 @@ const GAME_CONFIG = {
     AIR_JUMP_FLOAT_MS: 400, // Time to suspend gravity after an air jump
     HAZARD_DESTRUCTION_RADIUS: 3, // Radius of destruction when hazard touches platform
     MAX_CLUSTER_SIZE: 100, // Maximum number of connected pixels before they are destroyed
-    CLUSTER_SURVIVAL_RATIO: 10 // 1 in N pixels survive overpopulation destruction
+    CLUSTER_SURVIVAL_RATIO: 10, // 1 in N pixels survive overpopulation destruction
+    GRID_UPDATE_INTERVAL: 3 // Beats between grid updates
 };

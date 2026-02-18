@@ -196,14 +196,18 @@ class Game {
     onBeat(beat) {
         document.getElementById('beat-indicator').innerText = beat;
         document.getElementById('tempo').innerText = Math.round(this.audio.tempo);
-        // Update logic every 2 beats
-        if (beat % 2 === 0) {
+        // Update logic every N beats
+        if (beat % GAME_CONFIG.GRID_UPDATE_INTERVAL === 0) {
             this.grid.update(this.player);
             this.checkCollision(); // Check again in case a red pixel spawned on us
         }
 
         // Visual effects always on beat
-        this.ctx.canvas.style.transform = `scale(${1 + (beat % 2 === 0 ? 0.02 : 0)})`;
+        if (beat % GAME_CONFIG.GRID_UPDATE_INTERVAL === 0) {
+            this.ctx.canvas.style.transform = `scale(1.02)`;
+        } else {
+            this.ctx.canvas.style.transform = `scale(1)`;
+        }
         setTimeout(() => this.ctx.canvas.style.transform = "scale(1)", 100);
     }
 
