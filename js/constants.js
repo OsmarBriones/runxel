@@ -29,8 +29,8 @@ const GAME_CONFIG = {
     MAX_CLUSTER_SIZE: 100, // Maximum number of connected pixels before they are destroyed
     CLUSTER_SURVIVAL_RATIO: 10, // 1 in N pixels survive overpopulation destruction
     GRID_UPDATE_INTERVAL: 5, // Beats between grid updates
-    MAX_CAMPING_BEATS: 5, // Max beats allowed in same position
-    MAX_ROW_CAMPING_BEATS: 10, // Max beats allowed in same row
-    MAX_COL_CAMPING_BEATS: 10, // Max beats allowed in same column
+    MAX_CAMPING_BEATS: 20, // Max beats allowed in same position
+    MAX_ROW_CAMPING_BEATS: 20, // Max beats allowed in same row
+    MAX_COL_CAMPING_BEATS: 20, // Max beats allowed in same column
     INVINCIBLE_MODE: false // Debug: Player cannot die
 };
