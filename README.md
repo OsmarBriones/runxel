@@ -12,13 +12,14 @@ Runxel is a rhythm-based pixel art survival game built with vanilla JavaScript, 
     *   **Up/Down Arrow**: Climb (When inside Green Pixels)
     *   **Up Arrow (Mid-Air)**: Air Jump (Max 3 times, recharges on Green Pixels)
     *   *(Vertical movement is otherwise controlled by gravity)*
-4.  **Objective**: Survive as long as possible!
-    *   **White Pixel**: You.
-    *   **Green Pixels**: Safe platforms. You can stand on these.
-    *   **Red Pixels**: Danger! Touching these results in **Game Over**.
-    *   **Red Pixels**: Danger! Touching these results in **Game Over**.
-    *   **Black/Empty**: Air. You will fall through these.
-5.  **Don't Stand Still**: If you stay in the exact same position for 5 beats (configurable), you die. Keep moving!
+4.## How to Play
+**Objective**: Survive as long as you can (500 Beats to Win!) and climb the infinite pixel grid!
+**Climb**: Touch **Green Pixels** to recharge your jumps and rest.
+**Avoid**: **Red Pixels** (Hazards) will kill you. **Falling Brown Walls** can trap you.
+**Move**: Stay in rhythm. The grid updates on the beat.
+
+## Rules
+1.  **Gravity**: You constantly fall unless you are on a platform (Green/Brown) or jumping.'t Stand Still**: If you stay in the exact same position for 5 beats (configurable), you die. Keep moving!
 6.  **Don't Line Camp**: If you stay in the same **Row** for 10 beats, or the same **Column** for 10 beats (individually configurable), you die. Move diagonally!
 
 ### Pixel Types & Colors

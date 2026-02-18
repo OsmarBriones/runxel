@@ -105,6 +105,20 @@ class Game {
         return true;
     }
 
+    // Handles winning the game
+    gameWin() {
+        this.isPlaying = false;
+        this.audio.stop();
+        document.getElementById('overlay').classList.remove('hidden');
+        document.querySelector('#overlay h2').innerText = "YOU WON!";
+
+        const reasonElement = document.querySelector('#overlay p:first-of-type');
+        if (reasonElement) {
+            reasonElement.innerText = `You survived ${GAME_CONFIG.WIN_BEAT_CONDITION} beats!`;
+        }
+        document.querySelector('#score').innerText = GAME_CONFIG.WIN_BEAT_CONDITION;
+    }
+
     // ======== INPUT HANDLING ========
     // Handles player input.
     handleInput(e) {
@@ -228,6 +242,12 @@ class Game {
     onBeat(beat) {
         document.getElementById('beat-indicator').innerText = beat;
         document.getElementById('tempo').innerText = Math.round(this.audio.tempo);
+
+        // Check Winning Condition
+        if (beat >= GAME_CONFIG.WIN_BEAT_CONDITION) {
+            this.gameWin();
+            return;
+        }
 
         // Line Camping Check (Row/Col)
         // Check Row (If Y is same as LAST Y, increment. If Y changed, reset).
