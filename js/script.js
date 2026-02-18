@@ -18,6 +18,7 @@ class Game {
         this.lastAirJumpTime = 0;
         this.isPlaying = false;
         this.hasWon = false;
+        this.hasWon = false;
 
         // Gravity timing
         this.lastGravityTime = 0;
@@ -59,7 +60,7 @@ class Game {
     // ======== GAME STATE CONTROL ========
     // Starts the game loop.
     start() {
-        const isRestarting = this.hasWon; // Are we restarting from a win state?
+        const isRestarting = this.hasWon;
 
         // Allow start if not playing OR if we won (restart)
         if (this.isPlaying && !isRestarting) return;
@@ -92,8 +93,13 @@ class Game {
         this.hasLeftCol = false;
         this.snapshotPos = { x: 0, y: 0 }; // Position at start of beat interval
 
-        this.audio.start();
-        this.renderLoop();
+        // Reset Score UI
+        document.getElementById('score').innerText = "0";
+
+        // Only start loop if not already running (background loop)
+        if (!isRestarting) {
+            this.renderLoop();
+        }
     }
 
     // Ends the game. Returns true if game ended, false if prevented (invincible).
@@ -103,10 +109,21 @@ class Game {
             return false;
         }
 
-        this.isPlaying = false;
-        this.audio.stop();
+        const current = this.currentBeat || 0;
+        const target = GAME_CONFIG.WIN_BEAT_CONDITION;
+        const hasWon = current >= target;
+
+        if (hasWon) {
+            this.hasWon = true;
+            // Do NOT stop isPlaying or Audio
+        } else {
+            this.isPlaying = false;
+            this.audio.stop();
+        }
+
         document.getElementById('overlay').classList.remove('hidden');
-        document.querySelector('#overlay h2').innerText = "GAME OVER";
+
+        document.querySelector('#overlay h2').innerText = hasWon ? "YOU WON!" : "GAME OVER";
 
         // Show specific reason
         const reasonElement = document.querySelector('#overlay p:first-of-type');
@@ -114,12 +131,14 @@ class Game {
             reasonElement.innerText = reason || "Avoid RED pixels.";
         }
 
-        // Show beat count in second paragraph (instead of "Move on the BEAT")
+        // Show beat count/result in second paragraph
         const beatElement = document.querySelector('#overlay p:nth-of-type(2)');
         if (beatElement) {
-            const current = this.currentBeat || 0;
-            const target = GAME_CONFIG.WIN_BEAT_CONDITION;
-            beatElement.innerText = `Beat ${current} of ${target}`;
+            if (hasWon) {
+                beatElement.innerText = `Final Score: ${current} Beats! (Goal: ${target})`;
+            } else {
+                beatElement.innerText = `Beat ${current} of ${target}`;
+            }
 
             // Update Progress Bar
             const percentage = Math.min((current / target) * 100, 100);
@@ -128,31 +147,13 @@ class Game {
             if (progressBar && progressFill) {
                 progressBar.classList.remove('hidden');
                 progressFill.style.width = `${percentage}%`;
+                // Optional: Change color if won?
+                if (hasWon) progressFill.style.backgroundColor = '#00ff00'; // Green for win
+                else progressFill.style.backgroundColor = '#00ffff'; // Blue for normal
             }
         }
 
-        document.querySelector('#score').innerText = "0";
         return true;
-    }
-
-    // Handles winning the game
-    gameWin() {
-        if (this.hasWon) return; // Prevent re-triggering
-        this.hasWon = true;
-
-        // Decrease volume or change music? Keeping same for now.
-        // Show overlay with opaque background? No, keep it as is.
-
-        document.getElementById('overlay').classList.remove('hidden');
-        document.querySelector('#overlay h2').innerText = "YOU WON!";
-
-        const reasonElement = document.querySelector('#overlay p:first-of-type');
-        if (reasonElement) {
-            reasonElement.innerText = `You survived ${GAME_CONFIG.WIN_BEAT_CONDITION} beats!`;
-        }
-        document.querySelector('#score').innerText = GAME_CONFIG.WIN_BEAT_CONDITION;
-
-        // We do NOT stop isPlaying or Audio. Loop continues.
     }
 
     // ======== INPUT HANDLING ========
@@ -256,7 +257,7 @@ class Game {
     // ======== GAME LOOP ========
     // Main render and physics loop.
     renderLoop(time) {
-        if (!this.isPlaying) return;
+        if (!this.isPlaying && !this.hasWon) return; // Stop if game over and not in win state
 
         // Gravity Logic
         if (!this.lastGravityTime) this.lastGravityTime = time;
@@ -266,7 +267,7 @@ class Game {
             // Check if floating after air jump
             const isFloating = (time - this.lastAirJumpTime) < GAME_CONFIG.AIR_JUMP_FLOAT_MS;
 
-            if (!isFloating && !this.hasWon) {
+            if (!isFloating && !this.hasWon) { // Only apply gravity if not won
                 this.applyGravity();
             }
             this.lastGravityTime = time;
@@ -282,62 +283,62 @@ class Game {
         document.getElementById('beat-indicator').innerText = `${beat} / ${GAME_CONFIG.WIN_BEAT_CONDITION}`;
         document.getElementById('tempo').innerText = Math.round(this.audio.tempo);
 
-        // Check Winning Condition
-        if (beat >= GAME_CONFIG.WIN_BEAT_CONDITION) {
-            this.gameWin();
+        // Win Condition Met? Just log it, don't stop game.
+        if (beat === GAME_CONFIG.WIN_BEAT_CONDITION) {
+            console.log("Win Condition Met! Continuing in Endless Mode...");
+            // Optional: visual flair (flash screen?)
         }
 
-        // Skip camping/gameover logic if won
+        // Win/Spectator Mode: Skip logic involving player
         if (this.hasWon) {
-            // Only update grid (spectator mode)
             if (beat % GAME_CONFIG.GRID_UPDATE_INTERVAL === 0) {
-                // Pass null for player so walls don't stop for invisible player
-                this.grid.update(null);
+                this.grid.update(null); // Update grid without player
             }
+            return;
+        }
+
+        // Line Camping Check (Row/Col)
+        // Check Row (If Y is same as LAST Y, increment. If Y changed, reset).
+        if (this.player.y === this.lastPlayerPos.y) {
+            this.lineCampingRowBeatCount++;
         } else {
-            // Line Camping Check (Row/Col)
-            // Check Row (If Y is same as LAST Y, increment. If Y changed, reset).
-            if (this.player.y === this.lastPlayerPos.y) {
-                this.lineCampingRowBeatCount++;
-            } else {
-                this.lineCampingRowBeatCount = 0;
-            }
+            this.lineCampingRowBeatCount = 0;
+        }
 
-            // Check Col (If X is same as LAST X, increment. If X changed, reset).
-            if (this.player.x === this.lastPlayerPos.x) {
-                this.lineCampingColBeatCount++;
-            } else {
-                this.lineCampingColBeatCount = 0;
-            }
+        // Check Col (If X is same as LAST X, increment. If X changed, reset).
+        if (this.player.x === this.lastPlayerPos.x) {
+            this.lineCampingColBeatCount++;
+        } else {
+            this.lineCampingColBeatCount = 0;
+        }
 
-            // Update lastPlayerPos AFTER checking camping
-            if (this.player.x !== this.lastPlayerPos.x || this.player.y !== this.lastPlayerPos.y) {
-                this.campingBeatCount = 0;
-                this.lastPlayerPos = { x: this.player.x, y: this.player.y };
-            } else {
-                // Static Camping Check
-                this.campingBeatCount++;
-                if (this.campingBeatCount >= GAME_CONFIG.MAX_CAMPING_BEATS) {
-                    console.log("Game Over: Camping");
-                    if (this.gameOver("You stood still for too long!")) return;
-                }
+        // Update lastPlayerPos AFTER checking camping
+        if (this.player.x !== this.lastPlayerPos.x || this.player.y !== this.lastPlayerPos.y) {
+            this.campingBeatCount = 0;
+            this.lastPlayerPos = { x: this.player.x, y: this.player.y };
+        } else {
+            // Static Camping Check
+            this.campingBeatCount++;
+            if (this.campingBeatCount >= GAME_CONFIG.MAX_CAMPING_BEATS) {
+                console.log("Game Over: Camping");
+                if (this.gameOver("You stood still for too long!")) return;
             }
+        }
 
-            if (this.lineCampingRowBeatCount >= GAME_CONFIG.MAX_ROW_CAMPING_BEATS) {
-                console.log("Game Over: Row Camping");
-                if (this.gameOver("You stayed in the same ROW for too long!")) return;
-            }
+        if (this.lineCampingRowBeatCount >= GAME_CONFIG.MAX_ROW_CAMPING_BEATS) {
+            console.log("Game Over: Row Camping");
+            if (this.gameOver("You stayed in the same ROW for too long!")) return;
+        }
 
-            if (this.lineCampingColBeatCount >= GAME_CONFIG.MAX_COL_CAMPING_BEATS) {
-                console.log("Game Over: Col Camping");
-                if (this.gameOver("You stayed in the same COLUMN for too long!")) return;
-            }
+        if (this.lineCampingColBeatCount >= GAME_CONFIG.MAX_COL_CAMPING_BEATS) {
+            console.log("Game Over: Col Camping");
+            if (this.gameOver("You stayed in the same COLUMN for too long!")) return;
+        }
 
-            // Update logic every N beats (Normal Play)
-            if (beat % GAME_CONFIG.GRID_UPDATE_INTERVAL === 0) {
-                this.grid.update(this.player);
-                this.checkCollision(); // Check again in case a red pixel spawned on us
-            }
+        // Update logic every N beats
+        if (beat % GAME_CONFIG.GRID_UPDATE_INTERVAL === 0) {
+            this.grid.update(this.player);
+            this.checkCollision(); // Check again in case a red pixel spawned on us
         }
 
         // Visual effects always on beat
@@ -395,7 +396,7 @@ class Game {
                     this.currentBeat,
                     this.player.x * this.cellSize + this.cellSize / 2,
                     this.player.y * this.cellSize + this.cellSize / 2
-                )
+                );
             }
         }
     }

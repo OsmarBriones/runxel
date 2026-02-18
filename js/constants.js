@@ -33,5 +33,5 @@ const GAME_CONFIG = {
     MAX_ROW_CAMPING_BEATS: 20, // Max beats allowed in same row
     MAX_COL_CAMPING_BEATS: 20, // Max beats allowed in same column
     INVINCIBLE_MODE: false, // Debug: Player cannot die
-    WIN_BEAT_CONDITION: 300 // Beats to survive to win
+    WIN_BEAT_CONDITION: 350 // Beats to survive to win
 };
